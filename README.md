@@ -10,6 +10,8 @@ Code it with AI Home Page:  https://codeitwithai.com
 
 In order to use this sample, you will need to sign in to GitHub and request a [Personal Access Token](https://github.com/settings/personal-access-tokens/new?description=Learning+to+call+models+with+Carl+and+Jeff+on+CodeItWithAI%3A+https%3A%2F%2Fcodeitwithai.com&name=Learning+with+CodeItWithAI&user_models=read) to use the free GitHub models.
 
+Explore the [GitHub Models](https://github.com/marketplace?type=models) on the marketplace
+
 Configure the user secrets for this sample using this code:
 
 ```bash
