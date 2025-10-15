@@ -34,9 +34,11 @@ var model = "openai/gpt-5-mini";
 var chatClient = new ChatCompletionsClient(endpoint, new AzureKeyCredential(token))
 	.AsIChatClient(model);
 
+string systemPrompt = "You are a helpful AI assistant that helps people find information.";
+
 var history = new List<ChatMessage>
 {
-	new ChatMessage(AI.ChatRole.System, "You are a helpful assistant.")
+	new ChatMessage(AI.ChatRole.System, systemPrompt)
 };
 
 #endregion Chat Client Setup
