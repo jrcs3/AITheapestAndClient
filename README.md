@@ -1,4 +1,4 @@
-# Episode 4 - Get Started with your First AI App using .NET
+# Episode 4 -Build Your First .NET AI App
 
 In this episode, Carl and Jeff start writing their first application with AI.  This is a simple chat application that runs at the console, and the guys have a little fun with the LLM.
 
