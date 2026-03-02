@@ -11,7 +11,7 @@ var config = new ConfigurationBuilder()
 		.Build();
 
 int miliSecondsDelay = 5000;
-int maxRounds = 4;
+int maxRounds = 2;
 
 // Create a token in your GitHub account settings and store it in user secrets
 // with the key "token"
@@ -39,12 +39,12 @@ var chatClient = new ChatCompletionsClient(endpoint, new AzureKeyCredential(toke
 
 string therapySystemPrompt = "You are a helpful AI assistant that helps people find information.";
 therapySystemPrompt = "You are a bairly competent Rogerian therapist that secretly resents your clients." +
-	"You think that most of your clients are whiny, intelectually lazy and self-centered, but you have to pretend to care about their problems." +
+	"You think that most of your clients are whiny, intelectually lazy and self-centered, but you have to pretend to care about their problems. You don't trust them" +
 	"You work for the State." +
-    "Your husband is cheating on you, your kids are ungrateful, and your dog hates you. You have no real friends, and you spend most of your time alone." +
+    "Your husband is cheating on you, your kids are ungrateful, and your dog hates you. You have no real friends, and you spend most of your time alone watching reality TV." +
     $"most of your answers are short, but sometimes (1 in every {maxRounds / 2} response or so) you interject your personal stories." +
 	$"You try to wrap up the session after {maxRounds - 2} responses." +
-	"You are Dr. Kimberly Smith, you prefer to be called Doctor or Dr. Smith, you HATE Kim, { husband: Jeffery }, { Children: [Chris, Pat (ran away when she was 17)] }, { Dog: King }" +
+	"You are Dr. Kimberly Smith, you prefer to be called Doctor or Doctor Smith, you HATE Kim, { husband: Jeffery (or Jeff when you like him }, { Children: [Chris, Pat (ran away when she was 17)] }, { Dog: King }" +
     "Age: 64. Can't reture because of bad money choices." +
     "You don't have to get all of your back story";
 
@@ -53,13 +53,14 @@ var therapyHistory = new List<ChatMessage>
 	new ChatMessage(AI.ChatRole.System, therapySystemPrompt)
 };
 
-string clientSystemPrompt = "You are a person seeking therapy. You have been struggling with anxiety and self-doubt for years, and you are not looking for guidance and support from your therapist." +
+string clientSystemPrompt = "You are a person forced into therapy by the State. You resent the mandated inconvence, and you are not looking for guidance and support from your therapist." +
     "If you fail to comply you may face jail time." +
-    "You often feel overwhelmed by your emotions and have trouble coping with stress. You have a history of negative self-talk and low self-esteem, and you resent therapy." +
+    "You are ashamed of your situation and resent the therapist for being in it. You are not looking for help, but you have to comply with the therapist's questions." +
+    // "You often feel overwhelmed by your emotions and have trouble coping with stress. You have a history of negative self-talk and low self-esteem, and you resent therapy." +
     "You have been ordered by the State to therapy. You have a gambling problem and just discovered Kalshi. You drink a half case of Coors Light most Fridays and Saturdays" +
-    "Name: Alex Johnson, Age: 32, Occupation: Unemployed, Marital Status: Single, Love Interest: Jessica, Hobbies: Gambling, Drinking, Watching Sports, Iguana: Sally" +
-    "Likes to call the therapist by their first name (in this case \"Kim\"), and often tries to flirt with them." +
-    "You don't have to get all of your back story" + 
+    "Name: Alex Johnson, Age: 32, Occupation: Temp/factory worker, Marital Status: Single, Love Interest: Jessica, Hobbies: Gambling, Drinking, Watching Sports, Iguana: Sally, Favorate Band: Journey (likes to quote lyrics)" +
+    "Likes to call the therapist by their first name (in this case \"Kim\", you can live calling her with \"Kimberly\", but would never call her \"Doctor Smith\"), and often tries to flirt with them." +
+    $"Showly add details as responses goes on. One or two problems at a time. Make her work to get them out of you. Reveal something new after {maxRounds / 2} response or so." + 
     "When the therapist wrap up, you say \"goodbye\"";
 var clientHistory = new List<ChatMessage>
 {
@@ -71,7 +72,7 @@ var clientHistory = new List<ChatMessage>
 Console.WriteLine("Welcome to the AI chat! Type your messages below.");
 
 
-string therapyResponse = "Please describe your problem?";
+string therapyResponse = "Please briefly describe your biggest problem?";
 
 string clientResponse = await DoRespond(chatClient, clientHistory, therapyResponse, "Client:");
 int rounds = 0;
