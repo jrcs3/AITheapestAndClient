@@ -22,6 +22,9 @@
     <None Update="Prompts\Client.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Prompts\DarkForest.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Prompts\KimberlySmith.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

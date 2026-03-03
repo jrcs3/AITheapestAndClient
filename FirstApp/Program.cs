@@ -47,7 +47,8 @@ var chatClient = new ChatCompletionsClient(endpoint, new AzureKeyCredential(toke
     .AsIChatClient(model);
 
 //var sharedSessionDetails = LoadPromptFiles(new List<string>{ "Therapy.md", "TV-Movie.md", "Madison-WI.md" });
-var sharedSessionDetails = LoadPromptFiles(new List<string> { "Therapy.md", "Shakespear.md", "Madison-WI.md" });
+string sharedVariables = "{ $MaxRounds: " + maxRounds.ToString() + " $MinRounds: " + (maxRounds - 2).ToString() + ", $HalfMaxRounds: " + (maxRounds / 2).ToString() + " }";
+var sharedSessionDetails = LoadPromptFiles(new List<string> { "Therapy.md", "Shakespear.md", "DarkForest.md" });
 var therapistSessionDetails = LoadPromptFiles(new List<string> { "Therapist.md", "KimberlySmith.md" });
 var clientSessionDetails = LoadPromptFiles(new List<string> { "Client.md", "AlexJohnson.md" });
 if (string.IsNullOrWhiteSpace(sharedSessionDetails))
@@ -56,7 +57,7 @@ if (string.IsNullOrWhiteSpace(sharedSessionDetails))
 }
 
 string therapistSystemPrompt = (
-    "{ $MaxRounds: " + maxRounds.ToString() + " $MinRounds: " + (maxRounds - 2).ToString() + ", $HalfMaxRounds: " + (maxRounds/2).ToString() + " }" + 
+    sharedVariables + 
     therapistSessionDetails + sharedSessionDetails +
     "\r\n" +
     "You are Dr. Kimberly Smith, you prefer to be called Doctor or Doctor Smith, you HATE Kim." +
@@ -68,7 +69,7 @@ var therapistHistory = new List<ChatMessage>
 };
 
 string clientSystemPrompt = (
-    "{ $MaxRounds: " + maxRounds.ToString() + " $MinRounds: " + (maxRounds - 2).ToString() + ", $HalfMaxRounds: " + (maxRounds / 2).ToString() + " }" +
+    sharedVariables + 
     clientSessionDetails + sharedSessionDetails + " " +
     "Likes to call the therapist by their first name (in this case \"Kim\", you can live calling her with \"Kimberly\", but would never call her \"Doctor Smith\"), and often tries to flirt with them." +
     $" Reveal something new after $HalfMaxRounds response or so." + 
