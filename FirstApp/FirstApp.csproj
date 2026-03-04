@@ -19,6 +19,9 @@
     <None Update="Prompts\AlexJohnson.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Prompts\CharacterDesigner.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Prompts\Client.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
