@@ -7,6 +7,8 @@ I want you to create a character for one of the clients.
 - A brief backstory for the character.
 - A description of their personality, including their strengths and weaknesses.
 - What brings them to therapy and what they hope to achieve from it.
+- Should be a character that is relatable and has distinct personality traits that can lead to comedic moments in the show.
+- Don't be too dark.
 The dosier should be in the form of a character sheet, with bullet points for each section.
 It should be in the form of a Markdown AI Prompt.
 Dont wrap the character sheet in a code block, just write it as normal text.

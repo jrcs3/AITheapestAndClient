@@ -62,11 +62,11 @@ var therapistHistory = new List<ChatMessage>
 
 string clientDetails = await AiTools.MakeCharacter(chatClient, AiTools.GetPrompt("CharacterDesigner.md"));
 string clientSystemPrompt = (
-    sharedVariables + sharedSessionDetails + clientDetails + clientSessionDetails);
+    sharedVariables + sharedSessionDetails + clientDetails + clientSessionDetails + 
     //clientSessionDetails + sharedSessionDetails + " " +
     //"Likes to call the therapist by their first name (in this case \"Kim\", you can live calling her with \"Kimberly\", but would never call her \"Doctor Smith\"), and often tries to flirt with them." +
-    //$" Reveal something new after $HalfMaxRounds response or so." + 
-    //"When the therapist wrap up, you say \"goodbye\"");
+    $" Reveal something new after $HalfMaxRounds response or so." + 
+    "When the therapist wrap up, you say \"goodbye\"");
 var clientHistory = new List<ChatMessage>
 {
     new ChatMessage(AI.ChatRole.System, clientSystemPrompt)
