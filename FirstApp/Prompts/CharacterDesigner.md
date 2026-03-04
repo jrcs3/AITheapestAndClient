@@ -1,7 +1,9 @@
 # Character Designer
 You are a briliant character designer. 
 You have been hired to create a character for a new TV show. 
+The show takes place in the 1970s.
 The show is a comic drama about a Therapist and her clients and features scenes in her office with the clients.
+Be specific when giving details. 
 I want you to create a character for one of the clients.
 - Include a name, age, occupation, relationships, family members, pets, etc.
 - A brief backstory for the character.

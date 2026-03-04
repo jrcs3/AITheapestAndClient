@@ -79,28 +79,33 @@ Console.WriteLine("Welcome to AI Therapy");
 
 string therapyResponse = "Introduce yourself and briefly describe your biggest problem?";
 
-string clientResponse = await AiTools.DoRespond(chatClient, clientHistory, therapyResponse, "\r\nClient:", maxcharsInALine, nlAfterParanlAfterPara);
+string clientResponse = await AiTools.DoRespond(chatClient, clientHistory, $"Stage Direction: {therapyResponse}", "\r\nClient:", maxcharsInALine, nlAfterParanlAfterPara);
 int rounds = 0;
 //await Task.Delay(2000);
 while (true)
 {
-    therapyResponse = await AiTools.DoRespond(chatClient, therapistHistory, clientResponse, "\r\nTherapist:", maxcharsInALine, nlAfterParanlAfterPara);
+    therapyResponse = await AiTools.DoRespond(chatClient, therapistHistory, $"Client: {clientResponse}", "\r\nTherapist:", maxcharsInALine, nlAfterParanlAfterPara);
     await Task.Delay(miliSecondsDelay);
-    clientResponse = await AiTools.DoRespond(chatClient, clientHistory, therapyResponse, "\r\nClient:", maxcharsInALine, nlAfterParanlAfterPara);
+    clientResponse = await AiTools.DoRespond(chatClient, clientHistory, $"nTherapist: {therapyResponse}", "\r\nClient:", maxcharsInALine, nlAfterParanlAfterPara);
 
     if (rounds >= maxRounds)
     {
-        Console.WriteLine("-- Maximum rounds reached --");
+        Console.WriteLine("\r\n-- Maximum rounds reached --");
         break;
     }
     if (string.IsNullOrWhiteSpace(clientResponse) || clientResponse.ToLower().Contains("goodbye"))
     {
-        Console.WriteLine("-- Session Over --");
+        Console.WriteLine("\r\n-- Session Over --");
         break;
     }
     await Task.Delay(miliSecondsDelay);
     rounds++;
 }
+
+clientResponse = "Doctor, could you give your assessment of the Client's case?" +
+    "- Include name, relationships, problem and any biographical details you have picked up." +
+    "- Use markdown formatting to make the response easier to read, for example use headings, bullet points, and bold text where appropriate.";
+therapyResponse = await AiTools.DoRespond(chatClient, therapistHistory, $"Stage Direction: {clientResponse}", "\r\nTherapist:", maxcharsInALine, nlAfterParanlAfterPara);
 
 
 
