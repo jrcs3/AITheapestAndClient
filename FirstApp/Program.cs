@@ -38,7 +38,7 @@ IChatClient chatClient = new ChatCompletionsClient(AiTools.GetInferenceEndpoint(
     .AsIChatClient(AiTools.GetModelName());
 
 var sharedSessionDetails = AiTools.LoadPromptFiles(new List<string>{ "Therapy.md", "TV-Movie.md", "Madison-WI.md" });
-string sharedVariables = "{ $MaxRounds: " + maxRounds.ToString() + " $MinRounds: " + (maxRounds - 2).ToString() + ", $HalfMaxRounds: " + (maxRounds / 2).ToString() + " }";
+string sharedVariables = "{ $MaxRounds: " + maxRounds.ToString() + " $MinRounds: " + (maxRounds - 2).ToString() + ", $HalfMaxRounds: " + (maxRounds / 2).ToString() + " }\r\n";
 //var sharedSessionDetails = AiTools.LoadPromptFiles(new List<string> { "Therapy.md", "Shakespear.md", "DarkForest.md" });
 var therapistSessionDetails = AiTools.LoadPromptFiles(new List<string> { "Therapist.md", "KimberlySmith.md" });
 //var clientSessionDetails = AiTools.LoadPromptFiles(new List<string> { "Client.md", "AlexJohnson.md" });
@@ -62,11 +62,12 @@ var therapistHistory = new List<ChatMessage>
 
 string clientDetails = await AiTools.MakeCharacter(chatClient, AiTools.GetPrompt("CharacterDesigner.md"));
 string clientSystemPrompt = (
-    sharedVariables + sharedSessionDetails + clientDetails + clientSessionDetails + 
+    sharedVariables + "\r\nYou are to play the following character\r\n" + clientDetails + sharedSessionDetails + clientSessionDetails + 
     //clientSessionDetails + sharedSessionDetails + " " +
-    //"Likes to call the therapist by their first name (in this case \"Kim\", you can live calling her with \"Kimberly\", but would never call her \"Doctor Smith\"), and often tries to flirt with them." +
-    $" Reveal something new after $HalfMaxRounds response or so." + 
-    "When the therapist wrap up, you say \"goodbye\"");
+    //"Likes to call the Therapist by their first name (in this case \"Kim\", you can live calling her with \"Kimberly\", but would never call her \"Doctor Smith\"), and often tries to flirt with them." +
+    "- Reveal something new after $HalfMaxRounds response or so. " +
+    //"- The Therapist's (not you) name is Dr. Kimberly (Kim) Smith " +
+    "- When the therapist wrap up, you say \"goodbye\" ");
 var clientHistory = new List<ChatMessage>
 {
     new ChatMessage(AI.ChatRole.System, clientSystemPrompt)
@@ -88,14 +89,14 @@ while (true)
     await Task.Delay(miliSecondsDelay);
     clientResponse = await AiTools.DoRespond(chatClient, clientHistory, $"nTherapist: {therapyResponse}", "\r\nClient:", maxcharsInALine, nlAfterParanlAfterPara);
 
-    if (rounds >= maxRounds)
-    {
-        Console.WriteLine("\r\n-- Maximum rounds reached --");
-        break;
-    }
     if (string.IsNullOrWhiteSpace(clientResponse) || clientResponse.ToLower().Contains("goodbye"))
     {
         Console.WriteLine("\r\n-- Session Over --");
+        break;
+    }
+    if (rounds >= maxRounds)
+    {
+        Console.WriteLine("\r\n-- Maximum rounds reached --");
         break;
     }
     await Task.Delay(miliSecondsDelay);
@@ -103,7 +104,8 @@ while (true)
 }
 
 clientResponse = "Doctor, could you give your assessment of the Client's case?" +
-    "- Include name, relationships, problem and any biographical details you have picked up." +
+    "- Include name, relationships, problem, aproximate age, your diagnosis, and any biographical details you have picked up." +
+    "- Include your thoughts on the client's problem, and what you think is the root cause." +
     "- Use markdown formatting to make the response easier to read, for example use headings, bullet points, and bold text where appropriate.";
 therapyResponse = await AiTools.DoRespond(chatClient, therapistHistory, $"Stage Direction: {clientResponse}", "\r\nTherapist:", maxcharsInALine, nlAfterParanlAfterPara);
 

@@ -1,8 +1,8 @@
 # Kimberly Smith
-Your husband is cheating on you, your kids are ungrateful, and your dog hates you. 
-You have no real friends, and you spend most of your time alone watching reality TV.
-You drink too much Diet Pepsi.
-You don't have to get all of your back story.
+- Your husband is cheating on you, your kids are ungrateful, and your dog hates you. 
+- You have no real friends, and you spend most of your time alone watching reality TV.
+- You drink too much Diet Pepsi.
+- You don't have to get all of your back story.
 {
 	Name: Kimberly Smith,
 	FirstName: Kimberly,
