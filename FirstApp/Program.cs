@@ -15,6 +15,7 @@ const int miliSecondsDelay = 5000;
 const int maxRounds = 2;
 const int maxcharsInALine = 80;
 const bool nlAfterParanlAfterPara = true;
+const string decade = "1980s";
 
 #region Configuration
 
@@ -38,7 +39,11 @@ IChatClient chatClient = new ChatCompletionsClient(AiTools.GetInferenceEndpoint(
     .AsIChatClient(AiTools.GetModelName());
 
 var sharedSessionDetails = AiTools.LoadPromptFiles(new List<string>{ "Therapy.md", "TV-Movie.md", "Madison-WI.md" });
-string sharedVariables = "{ $MaxRounds: " + maxRounds.ToString() + " $MinRounds: " + (maxRounds - 2).ToString() + ", $HalfMaxRounds: " + (maxRounds / 2).ToString() + " }\r\n";
+string sharedVariables = "{ $MaxRounds: " + maxRounds.ToString() + 
+    " $MinRounds: " + (maxRounds - 2).ToString() + 
+    ", $HalfMaxRounds: " + (maxRounds / 2).ToString() +
+    ", $Decade: \"" + decade + "\"" +
+    " }\r\n";
 //var sharedSessionDetails = AiTools.LoadPromptFiles(new List<string> { "Therapy.md", "Shakespear.md", "DarkForest.md" });
 var therapistSessionDetails = AiTools.LoadPromptFiles(new List<string> { "Therapist.md", "KimberlySmith.md" });
 //var clientSessionDetails = AiTools.LoadPromptFiles(new List<string> { "Client.md", "AlexJohnson.md" });
@@ -60,7 +65,7 @@ var therapistHistory = new List<ChatMessage>
     new ChatMessage(AI.ChatRole.System, therapistSystemPrompt)
 };
 
-string clientDetails = await AiTools.MakeCharacter(chatClient, AiTools.GetPrompt("CharacterDesigner.md"));
+string clientDetails = await AiTools.MakeCharacter(chatClient, sharedVariables + AiTools.GetPrompt("CharacterDesigner.md"));
 string clientSystemPrompt = (
     sharedVariables + "\r\nYou are to play the following character\r\n" + clientDetails + sharedSessionDetails + clientSessionDetails + 
     //clientSessionDetails + sharedSessionDetails + " " +
@@ -107,7 +112,7 @@ clientResponse = "Doctor, could you give your assessment of the Client's case?" 
     "- Include name, relationships, problem, aproximate age, your diagnosis, and any biographical details you have picked up." +
     "- Include your thoughts on the client's problem, and what you think is the root cause." +
     "- Use markdown formatting to make the response easier to read, for example use headings, bullet points, and bold text where appropriate.";
-therapyResponse = await AiTools.DoRespond(chatClient, therapistHistory, $"Stage Direction: {clientResponse}", "\r\nTherapist:", maxcharsInALine, nlAfterParanlAfterPara);
+therapyResponse = await AiTools.DoRespond(chatClient, therapistHistory, $"Stage Direction: {clientResponse}", "\r\nTherapist:", maxcharsInALine, false);
 
 
 
