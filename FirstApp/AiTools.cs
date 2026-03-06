@@ -108,18 +108,29 @@ public static class AiTools
 
     public static async Task<string> DoRespond(IChatClient chatClient, List<ChatMessage> history, string inResponse, string displayTitle, int maxcharsInALine = 80, bool nlAfterParanlAfterPara = true)
     {
-        history.Add(new ChatMessage(AI.ChatRole.User, inResponse));
-
-        // Stream the AI response and add to chat history
-        Console.WriteLine(displayTitle);
-        string response = "";
-        await foreach (ChatResponseUpdate item in chatClient.GetStreamingResponseAsync(history))
+        var newMessage = new ChatMessage(AI.ChatRole.User, inResponse);
+        try
         {
-            response += item.Text;
+            history.Add(newMessage);
+
+            // Stream the AI response and add to chat history
+            Console.WriteLine(displayTitle);
+            string response = "";
+            await foreach (ChatResponseUpdate item in chatClient.GetStreamingResponseAsync(history))
+            {
+                response += item.Text;
+            }
+            history.Add(new ChatMessage(AI.ChatRole.Assistant, response));
+            Console.WriteLine(WrapText(response, maxcharsInALine, nlAfterParanlAfterPara));
+            return response;
         }
-        history.Add(new ChatMessage(AI.ChatRole.Assistant, response));
-        Console.WriteLine(WrapText(response, maxcharsInALine, nlAfterParanlAfterPara));
-        return response;
+        catch (Exception ex)
+        {
+            string longLine = "=============================================================";
+            Console.WriteLine($"\r\n{longLine}\r\nError: {ex}\r\n{longLine}\r\n");
+            history.Remove(newMessage);
+            return string.Empty;
+        }
     }
 
     static string WrapText(string text, int maxWidth = 80, bool nlAfterPara = true)

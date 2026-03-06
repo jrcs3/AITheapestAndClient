@@ -12,7 +12,7 @@ using System.Diagnostics;
 using FirstApp;
 
 const int miliSecondsDelay = 5000;
-const int maxRounds = 2;
+const int maxRounds = 10;
 const int maxcharsInALine = 80;
 const bool nlAfterParanlAfterPara = true;
 const string decade = "1980s";
@@ -64,7 +64,7 @@ var therapistHistory = new List<ChatMessage>
 {
     new ChatMessage(AI.ChatRole.System, therapistSystemPrompt)
 };
-
+Console.WriteLine("Today's client:\r\n");
 string clientDetails = await AiTools.MakeCharacter(chatClient, sharedVariables + AiTools.GetPrompt("CharacterDesigner.md"));
 string clientSystemPrompt = (
     sharedVariables + "\r\nYou are to play the following character\r\n" + clientDetails + sharedSessionDetails + clientSessionDetails + 
@@ -80,7 +80,7 @@ var clientHistory = new List<ChatMessage>
         
 #endregion Chat Client Setup
 
-Console.WriteLine("Welcome to AI Therapy");
+Console.WriteLine("\r\nWelcome to AI Therapy");
 
 
 string therapyResponse = "Introduce yourself and briefly describe your biggest problem?";
