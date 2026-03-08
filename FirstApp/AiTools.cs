@@ -178,7 +178,7 @@ public static class AiTools
         return outSb.ToString().TrimEnd();
     }
 
-    public static async Task<string> MakeCharacter(IChatClient chatClient, string prompt)
+    public static async Task<string> MakeCharacter(IChatClient chatClient, string prompt, int maxcharsInALine = maxcharsInALine, bool nlAfterParanlAfterPara = nlAfterParanlAfterPara)
     {
         var therapistHistory = new List<ChatMessage>
         {

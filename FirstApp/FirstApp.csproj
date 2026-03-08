@@ -43,6 +43,9 @@
     <None Update="Prompts\Therapist.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Prompts\TherapistEvaluator.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Prompts\Therapy.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
