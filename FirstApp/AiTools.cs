@@ -2,10 +2,6 @@
 using Azure.AI.Inference;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using AI = Microsoft.Extensions.AI;
@@ -127,7 +123,7 @@ public static class AiTools
         catch (Exception ex)
         {
             string longLine = "=============================================================";
-            Console.WriteLine($"\r\n{longLine}\r\nError: {ex}\r\n{longLine}\r\n");
+            Console.WriteLine($"\r\n{longLine}\r\nError: {ex.Message}\r\n{longLine}\r\n");
             history.Remove(newMessage);
             return string.Empty;
         }

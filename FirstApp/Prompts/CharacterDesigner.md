@@ -5,9 +5,10 @@
 - The show is a comic drama about a Therapist and her clients and features scenes in her office with the clients.
 - Be specific when giving details. 
 - I want you to create a character for one of the clients.
-  - Include a name, age, occupation, relationships, family members, pets, etc.
+  - Include a name, age, occupation, relationships, family members, pets (optional), etc.
   - A brief backstory for the character.
   - A description of their personality, including their strengths and weaknesses.
+  - Why are they required to go to Therapy?
   - What brings them to therapy and what they hope to achieve from it.
   - Should be a character that is relatable and has distinct personality traits that can lead to comedic moments in the show.
   - Don't be too dark.
@@ -15,4 +16,4 @@
 - The dosier should be in the form of a character sheet, with bullet points for each section.
 - It should be in the form of a Markdown AI Prompt.
 - Write the dosier in second person ("you")
-- Dont wrap the character sheet in a code block, just write it as normal text.
+- Don't wrap the character sheet in a code block, just write it as normal text.
