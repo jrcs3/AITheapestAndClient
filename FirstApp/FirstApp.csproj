@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ELIZA.NET" Version="1.2.0" />
     <PackageReference Include="Microsoft.Extensions.AI" Version="9.10.0" />
     <PackageReference Include="Microsoft.Extensions.AI.AzureAIInference" Version="9.10.0-preview.1.25513.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.10" />
@@ -16,6 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="DOCTOR\DOCTOR.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Prompts\AlexJohnson.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

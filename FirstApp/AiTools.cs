@@ -17,7 +17,7 @@ public static class AiTools
 
     public static string LoadPromptFiles(IEnumerable<string> fileNames)
     {
-        var searchRoots = new[] {
+        string[] searchRoots = new[] {
             AppContext.BaseDirectory,
             Path.Combine(AppContext.BaseDirectory, "Prompts"),
             Environment.CurrentDirectory,
@@ -26,15 +26,15 @@ public static class AiTools
             Path.Combine(Environment.CurrentDirectory, "..", "FirstApp", "Prompts")
         };
 
-        var sb = new StringBuilder();
-        foreach (var fileName in fileNames)
+        StringBuilder sb = new StringBuilder();
+        foreach (string fileName in fileNames)
         {
-            var found = false;
-            foreach (var root in searchRoots)
+            bool found = false;
+            foreach (string root in searchRoots)
             {
                 try
                 {
-                    var path = Path.Combine(root ?? string.Empty, fileName ?? string.Empty);
+                    string path = Path.Combine(root ?? string.Empty, fileName ?? string.Empty);
                     if (File.Exists(path))
                     {
                         sb.AppendLine(File.ReadAllText(path));
@@ -75,12 +75,12 @@ public static class AiTools
     {
         try
         {
-            var config = new ConfigurationBuilder()
+            IConfigurationRoot config = new ConfigurationBuilder()
                 .AddUserSecrets<Program>()
                 .Build();
 
             // try common keys
-            var token = config["ai_token"] ?? config["token"];
+            string? token = config["ai_token"] ?? config["token"];
             if (string.IsNullOrWhiteSpace(token))
             {
                 Console.WriteLine("Please set your GitHub token in user secrets with the key 'ai_token' or 'token'.");
@@ -104,7 +104,7 @@ public static class AiTools
 
     public static async Task<string> DoRespond(IChatClient chatClient, List<ChatMessage> history, string inResponse, string displayTitle, int maxcharsInALine = 80, bool nlAfterParanlAfterPara = true)
     {
-        var newMessage = new ChatMessage(AI.ChatRole.User, inResponse);
+        ChatMessage newMessage = new ChatMessage(AI.ChatRole.User, inResponse);
         try
         {
             history.Add(newMessage);
@@ -117,7 +117,7 @@ public static class AiTools
                 response += item.Text;
             }
             history.Add(new ChatMessage(AI.ChatRole.Assistant, response));
-            Console.WriteLine(WrapText(response, maxcharsInALine, nlAfterParanlAfterPara));
+            Console.WriteLine(SharedTools.WrapText(response, maxcharsInALine, nlAfterParanlAfterPara));
             return response;
         }
         catch (Exception ex)
@@ -129,63 +129,15 @@ public static class AiTools
         }
     }
 
-    static string WrapText(string text, int maxWidth = 80, bool nlAfterPara = true)
-    {
-        if (string.IsNullOrWhiteSpace(text) || maxWidth < 10)
-            return text ?? string.Empty;
-
-        // Preserve paragraph breaks: split on empty lines
-        //var paragraphs = Regex.Split(text.Trim(), @"\r?\n\s*\r?\n");
-        var paragraphs = Regex.Split(text.Trim(), "\n");
-        var outSb = new StringBuilder();
-        foreach (var para1 in paragraphs)
-        {
-            var para = para1.Replace("\r", "").Replace("\n", ""); // Normalize line breaks
-            if (string.IsNullOrWhiteSpace(para))
-            {
-                continue;
-            }
-            var words = Regex.Split(para.Trim(), "\\s+").Where(w => w.Length > 0).ToArray();
-            var lineSb = new StringBuilder();
-            for (int i = 0; i < words.Length; i++)
-            {
-                var word = words[i];
-                if (lineSb.Length == 0)
-                {
-                    lineSb.Append(word);
-                }
-                else if (lineSb.Length + 1 + word.Length <= maxWidth)
-                {
-                    lineSb.Append(' ').Append(word);
-                }
-                else
-                {
-                    outSb.AppendLine(lineSb.ToString());
-                    lineSb.Clear();
-                    lineSb.Append(word);
-                }
-            }
-            if (lineSb.Length > 0)
-            {
-                outSb.AppendLine(lineSb.ToString());
-            }
-            if (nlAfterPara)
-            {
-                outSb.AppendLine(); // paragraph separator
-            }
-            //
-        }
-        return outSb.ToString().TrimEnd();
-    }
 
     public static async Task<string> MakeCharacter(IChatClient chatClient, string prompt, int maxcharsInALine = maxcharsInALine, bool nlAfterParanlAfterPara = nlAfterParanlAfterPara)
     {
-        var therapistHistory = new List<ChatMessage>
+        List<ChatMessage> therapistHistory = new List<ChatMessage>
         {
             new ChatMessage(AI.ChatRole.System, prompt)
         };
 
-        var therapyResponse = await AiTools.DoRespond(chatClient, therapistHistory, string.Empty, string.Empty, maxcharsInALine, nlAfterParanlAfterPara);
+        string therapyResponse = await AiTools.DoRespond(chatClient, therapistHistory, string.Empty, string.Empty, maxcharsInALine, nlAfterParanlAfterPara);
         return therapyResponse;
     }
 }

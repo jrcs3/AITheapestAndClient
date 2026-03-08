@@ -13,7 +13,7 @@ const string decade = "Gay Nineties";
 
 #region Configuration
 
-var token = AiTools.GetToken();
+string? token = AiTools.GetToken();
 if (string.IsNullOrWhiteSpace(token))
 {
     Console.WriteLine("Error: AI inference token not found.");
@@ -29,16 +29,14 @@ if (string.IsNullOrWhiteSpace(token))
 IChatClient chatClient = new ChatCompletionsClient(AiTools.GetInferenceEndpoint(), new AzureKeyCredential(token))
     .AsIChatClient(AiTools.GetModelName());
 
-var sharedSessionDetails = AiTools.LoadPromptFiles(new List<string>{ "Therapy.md", "TV-Movie.md", "Madison-WI.md" });
+string sharedSessionDetails = AiTools.LoadPromptFiles(new List<string>{ "Therapy.md", "TV-Movie.md", "Madison-WI.md" });
 string sharedVariables = "{ $MaxRounds: " + maxRounds.ToString() + 
     " $MinRounds: " + (maxRounds - 2).ToString() + 
     ", $HalfMaxRounds: " + (maxRounds / 2).ToString() +
     ", $Decade: \"" + decade + "\"" +
     " }\r\n- You are living in " + decade + " and any references to it are considered modern, not nostalgic\r\n";
-//var sharedSessionDetails = AiTools.LoadPromptFiles(new List<string> { "Therapy.md", "Shakespear.md", "DarkForest.md" });
-var therapistSessionDetails = AiTools.LoadPromptFiles(new List<string> { "Therapist.md", "KimberlySmith.md" });
-//var clientSessionDetails = AiTools.LoadPromptFiles(new List<string> { "Client.md", "AlexJohnson.md" });
-var clientSessionDetails = AiTools.LoadPromptFiles(new List<string> { "Client.md" });
+string therapistSessionDetails = AiTools.LoadPromptFiles(new List<string> { "Therapist.md", "KimberlySmith.md" });
+string clientSessionDetails = AiTools.LoadPromptFiles(new List<string> { "Client.md" });
 if (string.IsNullOrWhiteSpace(sharedSessionDetails))
 {
     Console.WriteLine("Warning: no prompt files found; continuing without shared session details.");
@@ -51,7 +49,7 @@ string therapistSystemPrompt = (
     "You are Dr. Kimberly Smith, you prefer to be called Doctor or Doctor Smith, you HATE Kim." +
     "");
 
-var therapistHistory = new List<ChatMessage>
+List<ChatMessage> therapistHistory = new List<ChatMessage>
 {
     new ChatMessage(AI.ChatRole.System, therapistSystemPrompt)
 };
@@ -62,17 +60,20 @@ string clientSystemPrompt = (
     sharedVariables + "\r\nYou are to play the following character\r\n" + clientDetails + sharedSessionDetails + clientSessionDetails + 
     "- Reveal something new after $HalfMaxRounds response or so. " +
     "- When the therapist wrap up, you say \"goodbye\" ");
-var clientHistory = new List<ChatMessage>
+List<ChatMessage> clientHistory = new List<ChatMessage>
 {
     new ChatMessage(AI.ChatRole.System, clientSystemPrompt)
 };
         
 #endregion Chat Client Setup
 
+ElizaTools elizaTools = new ElizaTools();
+
 Console.WriteLine("\r\n# Welcome to AI Therapy");
 
-var assessmentHistory = new List<ChatMessage>();
-string therapyResponse = "Introduce yourself and briefly describe your biggest problem?";
+List<ChatMessage> assessmentHistory = new List<ChatMessage>();
+//string therapyResponse = "Introduce yourself and briefly describe your biggest problem?";
+string therapyResponse = elizaTools.Start();
 assessmentHistory.Add(new ChatMessage(AI.ChatRole.User, therapyResponse));
 
 string clientResponse = await AiTools.DoRespond(chatClient, clientHistory, $"Stage Direction: {therapyResponse}", "\r\nClient:", maxcharsInALine, nlAfterParanlAfterPara);
@@ -81,7 +82,7 @@ int rounds = 0;
 //await Task.Delay(2000);
 while (true)
 {
-    therapyResponse = await AiTools.DoRespond(chatClient, therapistHistory, $"Client: {clientResponse}", "\r\nTherapist:", maxcharsInALine, nlAfterParanlAfterPara);
+    therapyResponse = elizaTools.DoRespond(chatClient, therapistHistory, clientResponse, "\r\n\r\nTherapist: ", maxcharsInALine, nlAfterParanlAfterPara);
     assessmentHistory.Add(new ChatMessage(AI.ChatRole.User, therapyResponse));
     await Task.Delay(miliSecondsDelay);
     clientResponse = await AiTools.DoRespond(chatClient, clientHistory, $"Therapist: {therapyResponse}", "\r\nClient:", maxcharsInALine, nlAfterParanlAfterPara);
@@ -94,7 +95,11 @@ while (true)
     }
     if (rounds >= maxRounds)
     {
-        Console.WriteLine("\r\n-- Maximum rounds reached --");
+        therapyResponse = elizaTools.Stop();
+        assessmentHistory.Add(new ChatMessage(AI.ChatRole.User, therapyResponse));
+        clientResponse = await AiTools.DoRespond(chatClient, clientHistory, $"Therapist: {therapyResponse}", "\r\nClient:", maxcharsInALine, nlAfterParanlAfterPara);
+        assessmentHistory.Add(new ChatMessage(AI.ChatRole.User, clientResponse));
+        Console.WriteLine("\r\n-- Session Over --");
         break;
     }
     await Task.Delay(miliSecondsDelay);
@@ -102,37 +107,13 @@ while (true)
 }
 
 // Load assessment request from prompt file instead of inline string
-var assessmentRequest = AiTools.GetPrompt("AssessmentRequest.md");
+string assessmentRequest = AiTools.GetPrompt("AssessmentRequest.md");
 
-List<ChatMessage> evaluationHistory = MakeDeepCopy(assessmentHistory);
+List<ChatMessage> evaluationHistory = SharedTools.MakeDeepCopy(assessmentHistory);
 
 string summary = await AiTools.DoRespond(chatClient, assessmentHistory, $"Epilogue: {assessmentRequest}", "\r\n## Assessment", maxcharsInALine, false);
 
-var evaluationRequest = AiTools.GetPrompt("TherapistEvaluator.md");
+string evaluationRequest = AiTools.GetPrompt("TherapistEvaluator.md");
 string evaluation = await AiTools.DoRespond(chatClient, evaluationHistory, $"Epilogue: {evaluationRequest}", "\r\n## Evaluation", maxcharsInALine, false);
-
-static List<ChatMessage> MakeDeepCopy(List<ChatMessage> assessmentHistory)
-{
-    // Create a deep copy of assessmentHistory for evaluation use. We use
-    // reflection to read the message text property (which may be named
-    // "Content" or "Text" depending on the SDK) so the copy compiles
-    // against different ChatMessage implementations.
-    return assessmentHistory.Select(msg =>
-    {
-        try
-        {
-            var t = msg.GetType();
-            var roleProp = t.GetProperty("Role");
-            var contentProp = t.GetProperty("Content") ?? t.GetProperty("Text") ?? t.GetProperty("Message");
-            var role = roleProp != null ? (AI.ChatRole)roleProp.GetValue(msg) : AI.ChatRole.Assistant;
-            var content = contentProp != null ? contentProp.GetValue(msg) as string : msg.ToString();
-            return new ChatMessage(role, content ?? string.Empty);
-        }
-        catch
-        {
-            return new ChatMessage(AI.ChatRole.Assistant, msg.ToString());
-        }
-    }).ToList();
-}
 
 // WrapText moved to AiTools; Program still had a local reference but uses AiTools.DoRespond which prints wrapped text.
