@@ -11,6 +11,8 @@ const int maxcharsInALine = 80;
 const bool nlAfterParanlAfterPara = true;
 const string decade = "Gay Nineties";
 
+const string TherapistName = "Eliza Weizenbaum";
+
 #region Configuration
 
 string? token = AiTools.GetToken();
@@ -113,7 +115,8 @@ List<ChatMessage> evaluationHistory = SharedTools.MakeDeepCopy(assessmentHistory
 
 string summary = await AiTools.DoRespond(chatClient, assessmentHistory, $"Epilogue: {assessmentRequest}", "\r\n## Assessment", maxcharsInALine, false);
 
-string evaluationRequest = AiTools.GetPrompt("TherapistEvaluator.md");
+string evaluationRequest = "{ TherapistName: " + TherapistName + " }\r\n" + AiTools.GetPrompt("TherapistEvaluator.md");
 string evaluation = await AiTools.DoRespond(chatClient, evaluationHistory, $"Epilogue: {evaluationRequest}", "\r\n## Evaluation", maxcharsInALine, false);
 
+SharedTools.RecordGrade(evaluation, "ELIZA.csv");
 // WrapText moved to AiTools; Program still had a local reference but uses AiTools.DoRespond which prints wrapped text.

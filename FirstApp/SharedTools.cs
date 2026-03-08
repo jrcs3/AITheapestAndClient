@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using AI = Microsoft.Extensions.AI;
@@ -81,4 +82,56 @@ public static class SharedTools
         }).ToList();
     }
 
+    public static void RecordGrade(string evaluation, string fileName)
+    {
+        string fullFileName = Path.Combine("c:\\temp", fileName);
+        if (string.IsNullOrWhiteSpace(fullFileName))
+            throw new ArgumentException("fileName must be provided", nameof(fullFileName));
+
+        // Extract the labelled sections; allow multi-line values until the next label
+        static string ExtractLabel(string input, string label)
+        {
+            if (string.IsNullOrEmpty(input)) return string.Empty;
+            var pattern = $@"{Regex.Escape(label)}\s*:\s*(.*?)(?=(?:Therapist|Client|Grade)\s*:|$)";
+            var m = Regex.Match(input, pattern, RegexOptions.Singleline | RegexOptions.IgnoreCase);
+            return m.Success ? m.Groups[1].Value.Trim() : string.Empty;
+        }
+
+        var therapist = ExtractLabel(evaluation, "Therapist");
+        var client = ExtractLabel(evaluation, "Client");
+        var grade = ExtractLabel(evaluation, "Grade");
+
+        // Prepare CSV-safe values (quote and escape quotes)
+        static string CsvEscape(string s)
+        {
+            if (s == null) return string.Empty;
+            var escaped = s.Replace("\"", "\"\"");
+            return '"' + escaped + '"';
+        }
+
+        var header = "Therapist,Client,Grade,Timestamp";
+        var timestamp = DateTime.UtcNow.ToString("o");
+        var row = string.Join(",", new[] { CsvEscape(therapist), CsvEscape(client), CsvEscape(grade), CsvEscape(timestamp) });
+
+        // Ensure directory exists
+        try
+        {
+            var dir = Path.GetDirectoryName(fullFileName);
+            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            var writeHeader = !File.Exists(fullFileName);
+            using var sw = new StreamWriter(fullFileName, append: true, encoding: Encoding.UTF8);
+            if (writeHeader)
+            {
+                sw.WriteLine(header);
+            }
+            sw.WriteLine(row);
+        }
+        catch (Exception ex)
+        {
+            // Log to console but do not throw in library method
+            Console.WriteLine($"Failed to record grade to '{fullFileName}': {ex.Message}");
+        }
+    }
 }
