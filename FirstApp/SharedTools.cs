@@ -5,6 +5,8 @@ using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Linq;
+using System.IO;
 using AI = Microsoft.Extensions.AI;
 
 namespace FirstApp;
@@ -88,39 +90,22 @@ public static class SharedTools
         if (string.IsNullOrWhiteSpace(fullFileName))
             throw new ArgumentException("fileName must be provided", nameof(fullFileName));
 
-        // Extract the labelled sections; allow multi-line values until the next label
-        static string ExtractLabel(string input, string label)
-        {
-            if (string.IsNullOrEmpty(input)) return string.Empty;
-            var pattern = $@"{Regex.Escape(label)}\s*:\s*(.*?)(?=(?:Therapist|Client|Grade)\s*:|$)";
-            var m = Regex.Match(input, pattern, RegexOptions.Singleline | RegexOptions.IgnoreCase);
-            return m.Success ? m.Groups[1].Value.Trim() : string.Empty;
-        }
+        string therapist = ExtractLabel(evaluation, "Therapist");
+        string client = ExtractLabel(evaluation, "Client");
+        string grade = ExtractLabel(evaluation, "Grade");
 
-        var therapist = ExtractLabel(evaluation, "Therapist");
-        var client = ExtractLabel(evaluation, "Client");
-        var grade = ExtractLabel(evaluation, "Grade");
-
-        // Prepare CSV-safe values (quote and escape quotes)
-        static string CsvEscape(string s)
-        {
-            if (s == null) return string.Empty;
-            var escaped = s.Replace("\"", "\"\"");
-            return '"' + escaped + '"';
-        }
-
-        var header = "Therapist,Client,Grade,Timestamp";
-        var timestamp = DateTime.UtcNow.ToString("o");
-        var row = string.Join(",", new[] { CsvEscape(therapist), CsvEscape(client), CsvEscape(grade), CsvEscape(timestamp) });
+        string header = "Therapist,Client,Grade,Timestamp";
+        string timestamp = DateTime.UtcNow.ToString("o");
+        string row = string.Join(",", new[] { CsvEscape(therapist), CsvEscape(client), CsvEscape(grade), CsvEscape(timestamp) });
 
         // Ensure directory exists
         try
         {
-            var dir = Path.GetDirectoryName(fullFileName);
+            string? dir = Path.GetDirectoryName(fullFileName);
             if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
 
-            var writeHeader = !File.Exists(fullFileName);
+            bool writeHeader = !File.Exists(fullFileName);
             using var sw = new StreamWriter(fullFileName, append: true, encoding: Encoding.UTF8);
             if (writeHeader)
             {
@@ -134,4 +119,25 @@ public static class SharedTools
             Console.WriteLine($"Failed to record grade to '{fullFileName}': {ex.Message}");
         }
     }
+
+    // Prepare CSV-safe values (quote and escape quotes)
+    public static string CsvEscape(string s)
+    {
+        if (s == null) return string.Empty;
+        string escaped = s.Replace("\"", "\"\"");
+        return '"' + escaped + '"';
+    }
+
+
+    // Extract the labelled sections; allow multi-line values until the next label
+    public static string ExtractLabel(string input, string label)
+    {
+        if (string.IsNullOrEmpty(input)) return string.Empty;
+        // Match the label followed by ':' and capture up to the end of the line only.
+        // Do not allow the value to span multiple lines.
+        string pattern = $@"{Regex.Escape(label)}\s*:\s*(.*?)(?:\r?\n|$)";
+        Match m = Regex.Match(input, pattern, RegexOptions.IgnoreCase);
+        return m.Success ? m.Groups[1].Value.Trim() : string.Empty;
+    }
+
 }
