@@ -16,9 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Prompts\AlexJohnson.md">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="Prompts\AssessmentRequest.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -28,16 +25,10 @@
     <None Update="Prompts\Client.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Prompts\DarkForest.md">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Prompts\KimberlySmith.md">
+    <None Update="Prompts\JonathanHale.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Prompts\Madison-WI.md">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Prompts\Shakespear.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Prompts\Therapist.md">

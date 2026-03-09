@@ -8,8 +8,8 @@ const int miliSecondsDelay = 5000;
 const int maxRounds = 2;
 const int maxcharsInALine = 80;
 const bool nlAfterParanlAfterPara = true;
-const string decade = "Gay Nineties";
-const string TherapistName = "Dr. Kimberly Smith";
+const string decade = "1980s";
+const string TherapistName = "Pastor‑Counselor Jonathan Hale";
 
 #region Configuration
 
@@ -35,7 +35,7 @@ string sharedVariables = "{ $MaxRounds: " + maxRounds.ToString() +
     ", $HalfMaxRounds: " + (maxRounds / 2).ToString() +
     ", $Decade: \"" + decade + "\"" +
     " }\r\n- You are living in " + decade + " and any references to it are considered modern, not nostalgic\r\n";
-string therapistSessionDetails = AiTools.LoadPromptFiles(new List<string> { "Therapist.md", "KimberlySmith.md" });
+string therapistSessionDetails = AiTools.LoadPromptFiles(new List<string> { "Therapist.md", "JonathanHale.md" });
 string clientSessionDetails = AiTools.LoadPromptFiles(new List<string> { "Client.md" });
 if (string.IsNullOrWhiteSpace(sharedSessionDetails))
 {
@@ -46,7 +46,7 @@ string therapistSystemPrompt = (
     sharedVariables + 
     therapistSessionDetails + sharedSessionDetails +
     "\r\n" +
-    "You are Dr. Kimberly Smith, you prefer to be called Doctor or Doctor Smith, you HATE Kim." +
+    "You are Pastor‑Counselor Jonathan Hale" +
     "");
 
 List<ChatMessage> therapistHistory = new List<ChatMessage>
@@ -110,5 +110,5 @@ string evaluationRequest = "{ TherapistName: " + TherapistName + " }\r\n" + AiTo
 string evaluation = await AiTools.DoRespond(chatClient, evaluationHistory, $"Epilogue: {evaluationRequest}", "\r\n## Evaluation", maxcharsInALine, false);
 
 
-SharedTools.RecordGrade(evaluation, "Kimberly.csv");
+SharedTools.RecordGrade(evaluation, "Jonathan.csv");
 // WrapText moved to AiTools; Program still had a local reference but uses AiTools.DoRespond which prints wrapped text.
