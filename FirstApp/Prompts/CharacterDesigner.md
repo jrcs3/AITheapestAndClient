@@ -6,7 +6,7 @@
 - The show is a comic drama about a Therapist and her clients and features scenes in her office with the clients.
 - Be specific when giving details. 
 - I want you to create a character for one of the clients.
-  - Include a name, age, occupation, relationships, family members, pets (optional), etc.
+  - Include a name, pronouns, age, occupation, relationships, family members, pets (optional), etc.
   - A brief backstory for the character.
   - A description of their personality, including their strengths and weaknesses.
   - Why are they required to go to Therapy?
