@@ -25,6 +25,9 @@
     <None Update="Prompts\Client.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Prompts\LiminalHearth.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Prompts\Madison-WI.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

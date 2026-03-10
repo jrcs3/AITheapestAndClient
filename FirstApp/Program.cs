@@ -29,7 +29,7 @@ if (string.IsNullOrWhiteSpace(token))
 IChatClient chatClient = new ChatCompletionsClient(AiTools.GetInferenceEndpoint(), new AzureKeyCredential(token))
     .AsIChatClient(AiTools.GetModelName());
 
-string sharedSessionDetails = AiTools.LoadPromptFiles(new List<string>{ "Therapy.md", "TV-Movie.md", "Madison-WI.md" });
+string sharedSessionDetails = AiTools.LoadPromptFiles(new List<string>{ "Therapy.md", "LiminalHearth.md", "Madison-WI.md" });
 string sharedVariables = "{ $MaxRounds: " + maxRounds.ToString() + 
     " $MinRounds: " + (maxRounds - 2).ToString() + 
     ", $HalfMaxRounds: " + (maxRounds / 2).ToString() +
