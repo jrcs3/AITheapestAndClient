@@ -28,6 +28,9 @@
     <None Update="Prompts\Madison-WI.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Prompts\MarenEllery.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Prompts\Shakespear.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

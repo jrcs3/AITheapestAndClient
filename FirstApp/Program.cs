@@ -8,7 +8,7 @@ const int miliSecondsDelay = 5000;
 const int maxRounds = 2;
 const int maxcharsInALine = 80;
 const bool nlAfterParanlAfterPara = true;
-const string decade = "Gay Nineties";
+const string decade = "1980s";
 const string TherapistName = "Dr. Maren Ellery";
 
 #region Configuration
