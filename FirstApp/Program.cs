@@ -53,7 +53,7 @@ List<ChatMessage> therapistHistory = new List<ChatMessage>
 {
     new ChatMessage(AI.ChatRole.System, therapistSystemPrompt)
 };
-Console.WriteLine("Today's client:\r\n");
+Console.WriteLine("# Client's Profile\r\n");
 string characterDesignerPrompt = AiTools.GetPrompt("CharacterDesigner.md");
 string clientDetails = await AiTools.MakeCharacter(chatClient, sharedVariables + characterDesignerPrompt, maxcharsInALine, false);
 string clientSystemPrompt = (
